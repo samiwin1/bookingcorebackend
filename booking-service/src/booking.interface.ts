@@ -7,4 +7,7 @@ export interface Booking {
     adults: number;
     children: number;
     specialRequests?: string;
+    offername:string;
+    _id: string;
+
 }

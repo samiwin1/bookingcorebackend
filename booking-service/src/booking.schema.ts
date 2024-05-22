@@ -3,6 +3,9 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Booking extends Document {
+    @Prop({ type: String, required: true })
+    _id: string; // Explicitly add the _id field
+
     @Prop({ required: true })
     name: string;
 
@@ -23,6 +26,9 @@ export class Booking extends Document {
 
     @Prop({ type: String, required: false })
     specialRequests?: string;
+
+    @Prop({ required: true })
+    offername:string;
 }
 
 export const BookingSchema = SchemaFactory.createForClass(Booking);

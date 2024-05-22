@@ -9,8 +9,7 @@ async function bootstrap() {
     app.enableCors();
 
     // Serve static assets from the 'pics' folder
-    app.useStaticAssets(join(__dirname, 'pics'));
-
+    app.useStaticAssets('public', {prefix: '/public'});
     await app.listen(3000);
 }
 

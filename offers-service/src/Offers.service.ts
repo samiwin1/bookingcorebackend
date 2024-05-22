@@ -27,4 +27,22 @@ export class OffersService {
   async delete(id: string): Promise<Offer> {
     return this.offerModel.findByIdAndDelete(id).exec();
   }
+  async findByFilter(filter: any): Promise<Offer[]> {
+    const query = {};
+    console.log(filter)
+
+    if (filter.price !== undefined) {
+      query['price'] = filter.price;
+    }
+
+    if (filter.hotelStars !== undefined) {
+      query['hotelStars'] = filter.hotelStars;
+    }
+
+    if (filter.place !== undefined) {
+      query['place'] = { $regex: filter.place, $options: 'i' }; // Case-insensitive regex for partial match
+    }
+
+    return this.offerModel.find(query).exec();
+  }
 }

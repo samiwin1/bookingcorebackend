@@ -6,6 +6,7 @@ export interface OfferDocument extends Document {
   name: string;
   description: string;
   price: number;
-  imageUrl: String,
+  imageUrl: String;
+  hotelStars : string,
   // Other properties if needed
 }

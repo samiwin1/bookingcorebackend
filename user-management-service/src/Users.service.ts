@@ -5,6 +5,8 @@ import { Model } from 'mongoose';
 import { User } from './user.interface'; // Import the User interface
 import { RegisterDTO } from './dto/register.dto';
 import { LoginDTO } from './dto/login.dto';
+import { sign } from 'jsonwebtoken';
+
 
 @Injectable()
 export class UserService {
@@ -18,8 +20,11 @@ export class UserService {
     const newUser = new this.userModel(registerDTO);
     return newUser.save();
   }
+  async signPayload(payload: any) {
+    return sign(payload, 'SamiRayenPfeSecretKey#2024', { expiresIn: '1d' });
+  }
 
-  async login(loginDTO: LoginDTO): Promise<User> {
+  async login(loginDTO: LoginDTO) {
     // Implement your login logic here
     // For example, you can find the user by email and password
     const user = await this.userModel.findOne({
@@ -29,7 +34,13 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('Invalid email or password');
     }
-    return user;
+    const payload = {
+      id: user._id,
+      email: user.email,
+      role: user.role
+    };
+    const token = await this.signPayload(payload);
+    return { token };
   }
 
   async findAll(): Promise<User[]> {
