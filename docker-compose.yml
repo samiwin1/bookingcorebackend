@@ -8,12 +8,11 @@ services:
         target: node_production
     volumes:
         - .:/usr/src/app
-        - /usr/src/app/node_modules
     ports:
         - "5000:3000"
     extra_hosts:
         - "host.docker.internal:host-gateway"
-    command: npm run start:dev
+    command: npm run start:prod
 
 
     

@@ -21,12 +21,17 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm i -g @nestjs/cli
+#RUN npm i -g @nestjs/cli
+
+#RUN npm i jsonwebtoken
 
 RUN npm install --only=production
 
 #COPY ../.. .
 
+#COPY --from=node_development  /usr/src/app/package*.json ./
+#COPY --from=node_development  /usr/src/app/node_modules/ ./node_modules/
 COPY --from=node_development /usr/src/app/dist ./dist
 
-CMD ["node", "dist/src/main"]
+#RUN ls -l
+#CMD ["node", "./dist/src/main.js"]
