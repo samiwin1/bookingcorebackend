@@ -18,7 +18,8 @@ pipeline {
                 script {
                     // Use Docker Compose to build and run the application
                     // The '-d' flag is used to run the containers in detached mode (in the background)
-                    bat 'docker-compose -f docker-compose.yml up --build'
+                    bat ' docker-compose -f .\docker-compose.yml up --build'
+                   
                 }
             }
         }
