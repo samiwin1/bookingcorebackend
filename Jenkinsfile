@@ -17,31 +17,24 @@ pipeline {
             steps {
                 script {
                     // Clean previous build artifacts
-                    bat 'npm run clean'
+                    sh 'npm run clean'
                 }
             }
         }
 
-        stage('List Files') {
+        stage('Build and Push to Docker Hub') {
             steps {
                 script {
-                    // List all files to ensure everything is present
-                    bat 'dir /s'
-                }
-            }
-        }
+                    // Build the Docker image
+                    sh 'docker-compose -f ./docker-compose.yml build'
 
-        stage('Build with Docker Compose and Push to Docker Hub') {
-            steps {
-                script {
-                    // Use Docker Compose to build the application
-                    bat 'docker-compose -f ./docker-compose.yml up --build -d'
+                    // Login to Docker Hub
+                    withCredentials([usernamePassword(credentialsId: 'samiwin-dockerhub', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                        sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+                    }
 
-                    // Login to Docker Hub using credentials stored in Jenkins
-                    bat "echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin"
-
-                    // Push your production Docker image to Docker Hub
-                    bat 'docker push samiwin/booking-app:1.2'
+                    // Push the Docker image to Docker Hub
+                    sh 'docker-compose -f ./docker-compose.yml push'
                 }
             }
         }
@@ -50,8 +43,7 @@ pipeline {
             steps {
                 script {
                     // Deploy the application to Kubernetes
-                    bat 'kubectl run pfebookingdeploy --image=samiwin/booking-app:1.2 --port=3000'
-                    bat 'kubectl run pfebookingproject --image=samiwin/booking-app:1.2 --port=3000'
+                    sh 'kubectl apply -f kubernetes/deployment.yaml'
                 }
             }
         }
@@ -60,7 +52,7 @@ pipeline {
             steps {
                 script {
                     // Expose the Kubernetes deployment as a service
-                    bat 'kubectl expose pod pfebookingdeploy --name=samiwinsvc --port=3000'
+                    sh 'kubectl expose deployment bookingcorebackend --type=NodePort --port=5000'
                 }
             }
         }
@@ -68,10 +60,8 @@ pipeline {
         stage('Send to Minikube') {
             steps {
                 script {
-                    // Ensure the commands are run in Minikube context
-                    bat 'kubectl --context=minikube run pfebookingdeploy --image=samiwin/booking-app:1.2 --port=3000'
-                    bat 'kubectl --context=minikube run pfebookingproject --image=samiwin/booking-app:1.2 --port=3000'
-                    bat 'kubectl --context=minikube expose pod pfebookingdeploy --name=samiwinsvc --port=3000'
+                    // Send the application to Minikube
+                    sh 'kubectl apply -f kubernetes/service.yaml'
                 }
             }
         }
@@ -81,7 +71,7 @@ pipeline {
         always {
             script {
                 // Cleanup Docker Compose containers
-                bat 'docker-compose -f ./docker-compose.yml down'
+                sh 'docker-compose -f ./docker-compose.yml down'
             }
         }
     }
