@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     // Use Docker Compose to build and run the application
-                    bat 'docker-compose -f ./docker-compose.yml up --build -d'
+                    bat 'docker-compose -f ./docker-compose.yml up --build'
                 }
             }
         }
