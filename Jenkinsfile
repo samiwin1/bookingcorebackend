@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     // Use Docker Compose to build and run the application
-                    bat 'docker-compose -f .\docker-compose.yml up --build'
+                    bat 'docker-compose -f ./docker-compose.yml up --build -d'
                 }
             }
         }
@@ -69,7 +69,7 @@ pipeline {
         always {
             script {
                 // Cleanup Docker Compose containers
-                bat 'docker-compose -f ./docker-compose-dev.yml down'
+                bat 'docker-compose -f ./docker-compose.yml down'
             }
         }
     }
