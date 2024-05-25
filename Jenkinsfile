@@ -13,6 +13,24 @@ pipeline {
             }
         }
 
+        stage('Clean Project') {
+            steps {
+                script {
+                    // Clean previous build artifacts
+                    bat 'npm run clean'
+                }
+            }
+        }
+
+        stage('List Files') {
+            steps {
+                script {
+                    // List all files to ensure everything is present
+                    bat 'dir /s'
+                }
+            }
+        }
+
         stage('Build with Docker Compose') {
             steps {
                 script {
