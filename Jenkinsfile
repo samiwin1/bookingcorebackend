@@ -1,40 +1,35 @@
+
 pipeline {
     environment {
         imagename = "bookingcoreback-nodeprod-1"
-        registryCredential = 'samiwin-dockerhub'
         dockerImage = ''
-    }
+    } 
     agent any
     stages {
         stage('Cloning Git') {
             steps {
-                git([url: 'https://github.com/samiwin1/bookingcorebackend.git', branch: 'main', credentialsId: 'samiwin-github-user-token'])
+                checkout scm
             }
         }
         stage('Building image') {
             steps {
                 script {
-                    dockerImage = docker.build(imagename)
+                    dockerImage = docker.build imagename
                 }
             }
         }
-        stage('Deploy Image') {
+        stage('Deploy Master Image') {
+            when {
+                branch 'master'
+            }
             steps {
                 script {
-                    docker.withRegistry('', registryCredential) {
-                        dockerImage.push("${env.BUILD_NUMBER}")
-                        dockerImage.push('latest')
+                    docker.withRegistry(ecrurl, ecrcredentials) {     
+                        dockerImage.push("${ecrurl}/${imagename}:${BUILD_NUMBER}")
+                        dockerImage.push("${ecrurl}/${imagename}:latest")
                     }
                 }
             }
         }
-        stage('Remove Unused docker image') {
-            steps {
-                script {
-                    sh "docker rmi ${imagename}:${env.BUILD_NUMBER}"
-                    sh "docker rmi ${imagename}:latest"
-                }
-            }
-        }
-    }
+    }  
 }
