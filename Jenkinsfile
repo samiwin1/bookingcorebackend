@@ -2,72 +2,105 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('samiwin-dockerhub') // Jenkins credentials ID for Docker Hub
+        DOCKERHUB_CREDENTIALS = credentials('DOCKERHUB_CREDENTIALS')
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                // Checkout the source code from the repository
-                checkout scm
+                git credentialsId: '57f4e9dd-f030-4250-8e0d-8deb370b222b', url: 'https://github.com/samiwin1/bookingcorebackend.git'
             }
         }
 
         stage('Clean Project') {
             steps {
                 script {
-                    // Clean previous build artifacts
-                    sh 'npm run clean'
+                    if (isUnix()) {
+                        sh 'echo Cleaning project...'
+                    } else {
+                        bat 'echo Cleaning project...'
+                    }
                 }
             }
         }
 
         stage('Build Docker Images') {
+            when {
+                expression { currentBuild.result == null }
+            }
             steps {
                 script {
-                    // Build the Docker images using docker-compose
-                    sh 'docker-compose -f ./docker-compose.yml build'
+                    if (isUnix()) {
+                        sh 'docker build -t your_image_name .'
+                    } else {
+                        bat 'docker build -t your_image_name .'
+                    }
                 }
             }
         }
 
         stage('Push Docker Images to Docker Hub') {
+            when {
+                expression { currentBuild.result == null }
+            }
             steps {
                 script {
-                    // Login to Docker Hub
-                    withCredentials([usernamePassword(credentialsId: 'samiwin-dockerhub', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                        sh "echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin"
+                    if (isUnix()) {
+                        sh """
+                        docker login -u ${DOCKERHUB_CREDENTIALS_USR} -p ${DOCKERHUB_CREDENTIALS_PSW}
+                        docker push your_image_name
+                        """
+                    } else {
+                        bat """
+                        docker login -u %DOCKERHUB_CREDENTIALS_USR% -p %DOCKERHUB_CREDENTIALS_PSW%
+                        docker push your_image_name
+                        """
                     }
-
-                    // Push the Docker images to Docker Hub
-                    sh 'docker-compose -f ./docker-compose.yml push'
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
+            when {
+                expression { currentBuild.result == null }
+            }
             steps {
                 script {
-                    // Deploy the application to Kubernetes
-                    sh 'kubectl apply -f kubernetes/deployment.yaml'
+                    if (isUnix()) {
+                        sh 'kubectl apply -f your_k8s_config_file.yaml'
+                    } else {
+                        bat 'kubectl apply -f your_k8s_config_file.yaml'
+                    }
                 }
             }
         }
 
         stage('Expose Service') {
+            when {
+                expression { currentBuild.result == null }
+            }
             steps {
                 script {
-                    // Expose the Kubernetes deployment as a service
-                    sh 'kubectl expose deployment bookingcorebackend --type=NodePort --port=5000'
+                    if (isUnix()) {
+                        sh 'kubectl expose deployment your_deployment --type=LoadBalancer --name=your-service'
+                    } else {
+                        bat 'kubectl expose deployment your_deployment --type=LoadBalancer --name=your-service'
+                    }
                 }
             }
         }
 
         stage('Apply Kubernetes Service') {
+            when {
+                expression { currentBuild.result == null }
+            }
             steps {
                 script {
-                    // Apply the Kubernetes service configuration
-                    sh 'kubectl apply -f kubernetes/service.yaml'
+                    if (isUnix()) {
+                        sh 'kubectl apply -f your_service_file.yaml'
+                    } else {
+                        bat 'kubectl apply -f your_service_file.yaml'
+                    }
                 }
             }
         }
@@ -76,8 +109,21 @@ pipeline {
     post {
         always {
             script {
-                // Cleanup Docker Compose containers
-                sh 'docker-compose -f ./docker-compose.yml down'
+                if (isUnix()) {
+                    sh 'echo Pipeline finished'
+                } else {
+                    bat 'echo Pipeline finished'
+                }
+            }
+        }
+
+        failure {
+            script {
+                if (isUnix()) {
+                    sh 'echo Pipeline failed'
+                } else {
+                    bat 'echo Pipeline failed'
+                }
             }
         }
     }
