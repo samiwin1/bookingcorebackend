@@ -47,7 +47,7 @@ pipeline {
                 script {
                     if (isUnix()) {
                         sh """
-                        docker login -u ${DOCKERHUB_CREDENTIALS_USR} -p ${DOCKERHUB_CREDENTIALS_PSW}
+                        docker login -u ${env.DOCKERHUB_CREDENTIALS_USR} -p ${env.DOCKERHUB_CREDENTIALS_PSW}
                         docker push your_image_name
                         """
                     } else {
