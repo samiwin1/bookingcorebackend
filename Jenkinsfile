@@ -22,18 +22,24 @@ pipeline {
             }
         }
 
-        stage('Build and Push to Docker Hub') {
+        stage('Build Docker Images') {
             steps {
                 script {
-                    // Build the Docker image
+                    // Build the Docker images using docker-compose
                     sh 'docker-compose -f ./docker-compose.yml build'
+                }
+            }
+        }
 
+        stage('Push Docker Images to Docker Hub') {
+            steps {
+                script {
                     // Login to Docker Hub
                     withCredentials([usernamePassword(credentialsId: 'samiwin-dockerhub', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                        sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+                        sh "echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin"
                     }
 
-                    // Push the Docker image to Docker Hub
+                    // Push the Docker images to Docker Hub
                     sh 'docker-compose -f ./docker-compose.yml push'
                 }
             }
@@ -57,10 +63,10 @@ pipeline {
             }
         }
 
-        stage('Send to Minikube') {
+        stage('Apply Kubernetes Service') {
             steps {
                 script {
-                    // Send the application to Minikube
+                    // Apply the Kubernetes service configuration
                     sh 'kubectl apply -f kubernetes/service.yaml'
                 }
             }
