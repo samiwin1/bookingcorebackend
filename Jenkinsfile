@@ -1,35 +1,26 @@
-
 pipeline {
-    environment {
-        imagename = "bookingcoreback-nodeprod-1"
-        dockerImage = ''
-    } 
     agent any
+    tools {
+        maven 'Maven'  // Ensure Maven is installed and configured in Jenkins
+    }
     stages {
-        stage('Cloning Git') {
+        stage('Build Maven') {
             steps {
-                checkout scm
+         checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/samiwin1/bookingcorebackend.git']])
+        
+                sh "mvn -Dmaven.test.failure.ignore=true clean package"
             }
         }
-        stage('Building image') {
+           stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build imagename
+                  sh 'docker build -t bookingcoreback-nodeprod:latest .'
                 }
             }
         }
-        stage('Deploy Master Image') {
-            when {
-                branch 'master'
-            }
-            steps {
-                script {
-                    docker.withRegistry(ecrurl, ecrcredentials) {     
-                        dockerImage.push("${ecrurl}/${imagename}:${BUILD_NUMBER}")
-                        dockerImage.push("${ecrurl}/${imagename}:latest")
-                    }
-                }
-            }
-        }
-    }  
+        
+ 
+       
+    }
 }
+
