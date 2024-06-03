@@ -9,10 +9,9 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                // Checkout the source code from the repository
-                checkout scm
+                git url: 'https://github.com/samiwin1/bookingcorebackend.git', branch: 'main'
             }
         }
 
@@ -34,7 +33,7 @@ pipeline {
         stage('Docker Login') {
             steps {
                 // Log in to Docker Hub
-                sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
+                sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
             }
         }
 
