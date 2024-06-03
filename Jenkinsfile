@@ -1,53 +1,5 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
-    }
-
-    stages {
-        stage('Checkout SCM') {
-            steps {
-                checkout scm
-            }
-        }
-        
-        stage('Build') {
-            steps {
-                script {
-                    if (isUnix()) {
-                        sh 'echo "Building on Unix"'
-                    } else {
-                        bat 'echo "Building on Windows"'
-                    }
-                }
-            }
-        }
-
-        stage('Docker Build') {
-            when {
-                expression { !isUnix() } // Skip for Windows for now
-            }
-            steps {
-                sh 'docker build -t myimage .'
-            }
-        }
-    }
-
-    post {
-        always {
-            script {
-                if (isUnix()) {
-                    sh 'nohup somecommand &'
-                } else {
-                    bat 'start /B somecommand'
-                }
-            }
-        }
-    }
-}
-pipeline {
-    agent any
     environment {
         GIT_EXEC = 'C:\\Program Files\\Git\\bin\\git.exe' // Adjust this path as needed
         DOCKERHUB_CREDENTIALS = credentials('samiwin-dockerhub')
@@ -63,31 +15,19 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/samiwin1/bookingcorebackend.git'
             }
         }
-        stage('Build') {
-            steps {
-                bat 'gradlew build' // Assuming you're using Gradle for building; adjust as necessary
-            }
-        }
-        stage('Docker Build') {
+        stage('Build and Start with Docker Compose') {
             steps {
                 script {
-                    docker.build('bookingcoreback-nodeprod-1')
-                }
-            }
-        }
-        stage('Docker Login') {
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB_CREDENTIALS') {
-                        // Login is handled automatically by withRegistry
-                    }
+                    bat 'docker-compose -f .\\docker-compose.yml up --build'
                 }
             }
         }
         stage('Docker Push') {
             steps {
                 script {
-                    docker.image('bookingcoreback-nodeprod-1').push('latest')
+                    docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB_CREDENTIALS') {
+                        sh 'docker push samiwin/booking-app:1.2'
+                    }
                 }
             }
         }
@@ -96,11 +36,9 @@ pipeline {
         always {
             script {
                 try {
-                    powershell """
-                        Start-Process -NoNewWindow -FilePath 'cmd.exe' -ArgumentList '/c some-command' -PassThru
-                    """ // Replace `some-command` with your actual command
+                    // Additional cleanup or notifications can go here
                 } catch (Exception e) {
-                    echo "Error running background command: ${e.getMessage()}"
+                    echo "Error during post-build steps: ${e.getMessage()}"
                 }
             }
         }
