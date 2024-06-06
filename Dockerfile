@@ -27,6 +27,8 @@ COPY package*.json ./
 
 #RUN npm i jsonwebtoken
 
+RUN npm install
+
 RUN npm install --only=production
 
 #COPY ../.. .
