@@ -6,7 +6,7 @@ COPY package*.json ./
 
 RUN npm i -g @nestjs/cli
 
-RUN npm ci 
+RUN npm install 
 
 COPY . .
 
@@ -25,7 +25,7 @@ COPY package*.json ./
 
 #RUN npm i jsonwebtoken
 
-RUN npm ci --only=production
+RUN npm install --only=production
 
 #COPY ../.. .
 
