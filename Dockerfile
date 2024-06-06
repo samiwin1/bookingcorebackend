@@ -31,6 +31,7 @@ RUN npm install --only=production
 
 #COPY --from=node_development  /usr/src/app/package*.json ./
 #COPY --from=node_development  /usr/src/app/node_modules/ ./node_modules/
+RUN ls -l
 COPY --from=node_development /usr/src/app/dist ./dist
 
 #RUN ls -l
