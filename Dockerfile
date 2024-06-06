@@ -4,15 +4,13 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm i -g @nestjs/cli
+RUN npm ci -g @nestjs/cli
 
-RUN npm install 
+RUN npm ci 
 
 COPY . .
 
-RUN nest -v
-
-#RUN npm run build
+RUN npm run build
 
 FROM node:18-alpine as node_production
 
@@ -27,16 +25,13 @@ COPY package*.json ./
 
 #RUN npm i jsonwebtoken
 
-
-
-RUN npm install --only=production
+RUN npm ci --only=production
 
 #COPY ../.. .
 
 #COPY --from=node_development  /usr/src/app/package*.json ./
 #COPY --from=node_development  /usr/src/app/node_modules/ ./node_modules/
-COPY --from=node_development /usr/src/app/ ./
-RUN npm run build
+COPY --from=node_development /usr/src/app/dist ./dist
 
 #RUN ls -l
 #CMD ["node", "./dist/src/main.js"]
