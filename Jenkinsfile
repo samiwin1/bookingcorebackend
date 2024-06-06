@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         GIT_EXEC = 'C:\\Program Files\\Git\\bin\\git.exe' // Adjust this path as needed
-        DOCKERHUB_CREDENTIALS = credentials('samiwin-dockerhub')
+        DOCKERHUB_CREDENTIALS = credentials('bookingcore')
     }
     stages {
         stage('Checkout SCM') {
