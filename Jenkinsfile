@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent {label 'linux'}
     
     environment {
         GIT_EXEC = 'C:\\Program Files\\Git\\bin\\git.exe' // Adjust this path as needed
