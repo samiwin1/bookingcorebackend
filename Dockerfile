@@ -2,6 +2,8 @@ FROM node:20-alpine As node_development
 
 WORKDIR /usr/src/app
 
+COPY --chown=node:node . .
+
 COPY package*.json ./
 
 RUN npm i -g @nestjs/cli

@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    tools {nodejs "node"}
+    
     environment {
         GIT_EXEC = 'C:\\Program Files\\Git\\bin\\git.exe' // Adjust this path as needed
         DOCKERHUB_CREDENTIALS = credentials('samiwin-dockerhub')
