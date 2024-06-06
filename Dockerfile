@@ -12,7 +12,7 @@ COPY . .
 
 RUN nest -v
 
-RUN npm run build
+#RUN npm run build
 
 FROM node:18-alpine as node_production
 
