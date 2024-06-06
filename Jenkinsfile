@@ -15,10 +15,10 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/samiwin1/bookingcorebackend.git'
             }
         }
-        stage('Build and Start with Docker Compose') {
+        stage('Build with Docker Compose') {
             steps {
                 script {
-                    bat 'docker-compose -f .\\docker-compose.yml up --build'
+                    bat 'docker-compose -f .\\docker-compose.yml up --build -d'
                 }
             }
         }
