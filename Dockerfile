@@ -1,4 +1,4 @@
-FROM node:18-alpine As node_development
+FROM node:20-alpine As node_development
 
 WORKDIR /usr/src/app
 
@@ -12,7 +12,7 @@ COPY . .
 
 RUN npm run build
 
-FROM node:18-alpine as node_production
+FROM node:20-alpine as node_production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -32,8 +32,6 @@ RUN npm install --only=production
 #COPY --from=node_development  /usr/src/app/package*.json ./
 #COPY --from=node_development  /usr/src/app/node_modules/ ./node_modules/
 COPY --from=node_development /usr/src/app/dist ./dist
-RUN ls -l
-RUN ls -l ./dist
 
 #RUN ls -l
 #CMD ["node", "./dist/src/main.js"]
