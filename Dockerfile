@@ -10,7 +10,7 @@ RUN npm install
 
 COPY . .
 
-RUN npm install && npm run build
+
 
 FROM node:18-alpine as node_production
 
@@ -24,6 +24,8 @@ COPY package*.json ./
 #RUN npm i -g @nestjs/cli
 
 #RUN npm i jsonwebtoken
+
+RUN  npm run build
 
 RUN npm install --only=production
 
