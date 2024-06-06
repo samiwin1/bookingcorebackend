@@ -27,7 +27,7 @@ COPY package*.json ./
 
 #RUN npm i jsonwebtoken
 
-RUN npm install
+
 
 RUN npm install --only=production
 
@@ -35,7 +35,8 @@ RUN npm install --only=production
 
 #COPY --from=node_development  /usr/src/app/package*.json ./
 #COPY --from=node_development  /usr/src/app/node_modules/ ./node_modules/
-COPY --from=node_development /usr/src/app/dist ./dist
+COPY --from=node_development /usr/src/app/ ./
+RUN npm run build
 
 #RUN ls -l
 #CMD ["node", "./dist/src/main.js"]
