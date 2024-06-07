@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB_CREDENTIALS') {
-                        sh 'docker push samiwin/booking-app:1.2'
+                        bat 'docker push samiwin/booking-app:1.2'
                     }
                 }
             }
