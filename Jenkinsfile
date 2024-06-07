@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
 
-                        bat 'kubectl run pfebookingdeployjenkins --image=samiwin/booking-app:1.2 --port=3000'
+                        bat 'kubectl run pfebookingdeploy --image=samiwin/booking-app:1.2 --port=3000'
                     
                 }
             }
@@ -45,7 +45,7 @@ pipeline {
             steps {
                 script {
 
-                        bat 'kubectl expose pod pfebookingdeployjenkins --name=samiwinsvc --port=3000'
+                        bat 'kubectl expose pod pfebookingdeploy --name=samiwinsvc --port=3000'
                     
                 }
             }
