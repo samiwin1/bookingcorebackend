@@ -32,6 +32,25 @@ pipeline {
                 }
             }
         }
+        stage('kub pod run') {
+            steps {
+                script {
+
+                        bat 'kubectl run pfebookingdeployjenkins --image=samiwin/booking-app:1.2 --port=3000'
+                    
+                }
+            }
+        }
+        stage('kub pod expose') {
+            steps {
+                script {
+
+                        bat 'kubectl expose pod pfebookingdeployjenkins --name=samiwinsvc --port=3000'
+                    
+                }
+            }
+        }
+        
     }
     post {
         always {
