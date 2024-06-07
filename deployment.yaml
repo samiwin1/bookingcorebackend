@@ -1,3 +1,4 @@
+# Deployment for the NestJS app
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,16 +18,54 @@ spec:
         image: my-nestjs-app:latest
         ports:
         - containerPort: 3000
+
 ---
+# Service for the NestJS app
 apiVersion: v1
 kind: Service
 metadata:
   name: booking-app-service
 spec:
   selector:
-    app: booking-app
+    app: nestjs-app
   ports:
   - protocol: TCP
     port: 80
     targetPort: 3000
   type: NodePort
+
+---
+# ServiceAccount for Jenkins
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jenkins-sa
+  namespace: default
+
+---
+# Role with necessary permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: jenkins-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["get", "list", "create", "delete"]
+
+---
+# RoleBinding to bind the Role to the ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jenkins-rolebinding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: jenkins-sa
+  namespace: default
+roleRef:
+  kind: Role
+  name: jenkins-role
+  apiGroup: rbac.authorization.k8s.io
