@@ -1,9 +1,10 @@
 pipeline {
-    agent {label 'node'}
+    agent { label 'node' }
     
     environment {
         GIT_EXEC = 'C:\\Program Files\\Git\\bin\\git.exe' // Adjust this path as needed
         DOCKERHUB_CREDENTIALS = credentials('bookingcore')
+        KUBECONFIG_CREDENTIALS = credentials('my_kubernetes')
     }
     stages {
         stage('Checkout SCM') {
@@ -32,25 +33,18 @@ pipeline {
                 }
             }
         }
-        stage('kub pod run') {
+        stage('Deploy to Kubernetes') {
+            environment {
+                KUBECONFIG = credentials('my_kubernetes')
+            }
             steps {
                 script {
-
-                        bat 'kubectl run pfebookingdeploy --image=samiwin/booking-app:1.2 --port=3000'
-                    
+                    // Create Deployment and Service using YAML configuration
+                    bat 'echo %KUBECONFIG% > kubeconfig.yaml'
+                    bat 'kubectl apply -f deployment-service.yaml --kubeconfig=kubeconfig.yaml'
                 }
             }
         }
-        stage('kub pod expose') {
-            steps {
-                script {
-
-                        bat 'kubectl expose pod pfebookingdeploy --name=samiwinsvc --port=3000'
-                    
-                }
-            }
-        }
-        
     }
     post {
         always {
