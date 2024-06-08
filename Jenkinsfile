@@ -34,14 +34,11 @@ pipeline {
             }
         }
         stage('Deploy to Kubernetes') {
-            environment {
-                KUBECONFIG = credentials('my_kubernetes')
-            }
             steps {
-                script {
-                    // Create Deployment and Service using YAML configuration
-                    bat 'echo %KUBECONFIG% > kubeconfig.yaml'
-                    bat 'kubectl apply -f deployment-service.yaml --kubeconfig=kubeconfig.yaml'
+                withCredentials([file(credentialsId: 'my_kubernetes', variable: 'KUBECONFIG_FILE')]) {
+                    script {
+                        bat 'kubectl apply -f deployment-service.yaml --kubeconfig=%KUBECONFIG_FILE%'
+                    }
                 }
             }
         }
