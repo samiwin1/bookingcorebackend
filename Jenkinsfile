@@ -2,9 +2,9 @@ pipeline {
     agent { label 'node' }
 
     environment {
-        GIT_EXEC = 'C:\\Program Files\\Git\\bin\\git.exe' // Adjust this path as needed
+        GIT_EXEC = 'C:\\Program Files\\Git\\bin\\git.exe'
         DOCKERHUB_CREDENTIALS = credentials('bookingcore')
-        KUBECONFIG_CREDENTIALS = credentials('my_kubernetes') // Kubernetes credentials
+        KUBECONFIG_CREDENTIALS = credentials('my_kubernetes')
     }
 
     stages {
