@@ -37,9 +37,11 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    withCredentials([file(credentialsId: 'my_kubernetes', variable: 'KUBECONFIG_PATH')]) {
-                        bat "kubectl apply -f deployment.yaml --kubeconfig=%KUBECONFIG_PATH%"
-                    }
+                    // Run the pod
+                    bat 'kubectl run pfebookingdeploy --image=samiwin/booking-app:1.2 --port=3000'
+                    
+                    // Expose the pod
+                    bat 'kubectl expose pod pfebookingdeploy --name=samiwinsvc --port=3000'
                 }
             }
         }
