@@ -1,12 +1,10 @@
 pipeline {
-    agent { label 'node' }
-
+    agent {label 'node'}
+    
     environment {
         GIT_EXEC = 'C:\\Program Files\\Git\\bin\\git.exe' // Adjust this path as needed
         DOCKERHUB_CREDENTIALS = credentials('bookingcore')
-        KUBECONFIG_CREDENTIALS = credentials('kubernetes-jenkins') // Add Kubernetes credentials
     }
-
     stages {
         stage('Checkout SCM') {
             steps {
@@ -34,35 +32,26 @@ pipeline {
                 }
             }
         }
-        stage('kubectl Setup') {
-            steps {
-                script {
-                    // Set up kubectl context using the provided credentials
-                    bat """
-                    kubectl config set-cluster default-cluster --server=${KUBECONFIG_CREDENTIALS_KUBERNETES_API_SERVER}
-                    kubectl config set-credentials default-admin --token=${KUBECONFIG_CREDENTIALS_KUBERNETES_TOKEN}
-                    kubectl config set-context default-context --cluster=default-cluster --user=default-admin --namespace=application
-                    kubectl config use-context default-context
-                    """
-                }
-            }
-        }
         stage('kub pod run') {
             steps {
                 script {
-                    bat 'kubectl run pfebookingdeploy --image=samiwin/booking-app:1.2 --port=3000 --namespace=application'
+
+                        bat 'kubectl run pfebookingdeploy --image=samiwin/booking-app:1.2 --port=3000'
+                    
                 }
             }
         }
         stage('kub pod expose') {
             steps {
                 script {
-                    bat 'kubectl expose pod pfebookingdeploy --name=samiwinsvc --port=3000 --namespace=application'
+
+                        bat 'kubectl expose pod pfebookingdeploy --name=samiwinsvc --port=3000'
+                    
                 }
             }
         }
+        
     }
-
     post {
         always {
             script {
