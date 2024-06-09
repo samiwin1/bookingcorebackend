@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout SCM') {
             steps {
-                script {
+                script {zeez
                     if (!fileExists(env.GIT_EXEC)) {
                         error "Git executable not found at ${env.GIT_EXEC}"
                     }
@@ -37,11 +37,9 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Run the pod
-                    bat 'kubectl run pfebookingdeploy --image=samiwin/booking-app:1.2 --port=3000'
-                    
-                    // Expose the pod
-                    bat 'kubectl expose pod pfebookingdeploy --name=samiwinsvc --port=3000'
+                    withCredentials([file(credentialsId: 'my_kubernetes', variable: 'KUBECONFIG_PATH')]) {
+                        bat "kubectl apply -f deployment.yaml --kubeconfig=%KUBECONFIG_PATH%"
+                    }
                 }
             }
         }
