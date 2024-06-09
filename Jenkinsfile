@@ -2,15 +2,15 @@ pipeline {
     agent { label 'node' }
 
     environment {
-        GIT_EXEC = 'C:\\Program Files\\Git\\bin\\git.exe'
+        GIT_EXEC = 'C:\\Program Files\\Git\\bin\\git.exe' // Adjust this path as needed
         DOCKERHUB_CREDENTIALS = credentials('bookingcore')
-        KUBECONFIG_CREDENTIALS = credentials('my_kubernetes')
+        KUBECONFIG_CREDENTIALS = credentials('my_kubernetes') // Kubernetes credentials
     }
 
     stages {
         stage('Checkout SCM') {
             steps {
-                script {zeez
+                script {
                     if (!fileExists(env.GIT_EXEC)) {
                         error "Git executable not found at ${env.GIT_EXEC}"
                     }
