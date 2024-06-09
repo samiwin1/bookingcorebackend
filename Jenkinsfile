@@ -4,7 +4,7 @@ pipeline {
     environment {
         GIT_EXEC = 'C:\\Program Files\\Git\\bin\\git.exe' // Adjust this path as needed
         DOCKERHUB_CREDENTIALS = credentials('bookingcore')
-        KUBECONFIG_CREDENTIALS = credentials('my_kubernetes') // Kubernetes credentials
+        KUBECONFIG_PATH = 'C:\\Users\\samib\\.kube\\config' // Correct kubeconfig path
     }
 
     stages {
@@ -37,9 +37,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    withCredentials([file(credentialsId: 'my_kubernetes', variable: 'KUBECONFIG_PATH')]) {
-                        bat "kubectl apply -f deployment.yaml --kubeconfig=%KUBECONFIG_PATH%"
-                    }
+                    bat "kubectl apply -f deployment.yaml --kubeconfig=${env.KUBECONFIG_PATH} --validate=false"
                 }
             }
         }
