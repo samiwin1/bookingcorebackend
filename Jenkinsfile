@@ -37,7 +37,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    bat "minikube docker-env | Invoke-Expression"
+                   
                     bat "docker pull samiwin/booking-app:1.4"
                     bat "kubectl apply -f deployment.yaml"
                     bat "kubectl apply -f booking-app-service.yaml"
