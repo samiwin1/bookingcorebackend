@@ -24,7 +24,8 @@ export class BookingsService {
     }
 
     async update(id: string, updatedBooking: Booking): Promise<Booking> {
-        return this.bookingModel.findByIdAndUpdate(id, updatedBooking, { new: true }).exec();
+        //return this.bookingModel.findByIdAndUpdate(id, updatedBooking, { new: true }).exec();
+        return this.bookingModel.findById(id)
     }
 
     async delete(id: string): Promise<Booking> {
