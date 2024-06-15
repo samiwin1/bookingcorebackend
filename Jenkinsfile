@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB_CREDENTIALS') {
-                        bat 'docker push samiwin/booking-app:1.2'
+                        bat 'docker push samiwin/booking-app:1.4'
                     }
                 }
             }
@@ -37,7 +37,11 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    bat "kubectl apply -f deployment.yaml --kubeconfig=${env.KUBECONFIG_PATH} --validate=false"
+                    bat "minikube docker-env | Invoke-Expression"
+                    bat "docker pull samiwin/booking-app:1.4"
+                    bat "kubectl apply -f deployment.yaml"
+                    bat "kubectl apply -f booking-app-service.yaml"
+                    bat "kubectl port-forward service/bookingcoresvc1 7081:3000"
                 }
             }
         }

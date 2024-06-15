@@ -36,4 +36,4 @@ RUN npm install --only=production
 COPY --from=node_development /usr/src/app/dist ./dist
 
 #RUN ls -l
-#CMD ["node", "./dist/src/main.js"]
+CMD ["node", "/usr/src/app/dist/src/main.js"]
