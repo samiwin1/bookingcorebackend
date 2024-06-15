@@ -34,17 +34,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                   
-                    bat "docker pull samiwin/booking-app:1.4"
-                    bat "kubectl apply -f deployment.yaml"
-                    bat "kubectl apply -f booking-app-service.yaml"
-                    bat "kubectl port-forward service/bookingcoresvc1 7081:3000"
-                }
-            }
-        }
+       
     }
 
     post {
