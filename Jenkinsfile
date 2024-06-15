@@ -21,7 +21,7 @@ pipeline {
         stage('Build with Docker Compose') {
             steps {
                 script {
-                    bat 'docker-compose -f .\\docker-compose.yml up --build -d'
+                    bat 'docker build -t samiwin/booking-app:1.4 . '
                 }
             }
         }
